@@ -59,6 +59,15 @@ def display_users():
     users_list = (('John','Doe','Comedy'),('Jane', 'Doe','Drama'))
     return render_template('display_users.html', users = users_list)
 
+@app.route('/countries')
+def view_countries():
+    rows = execute_query("""
+        SELECT Code, Name, Continent, Population
+        FROM country
+        ORDER BY Population DESC
+        LIMIT 20
+    """)
+    return render_template("countries.html", rows=rows)
 
 # these two lines of code should always be the last in the file
 if __name__ == '__main__':

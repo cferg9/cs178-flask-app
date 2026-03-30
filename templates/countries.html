@@ -1,0 +1,9 @@
+<h1>Top 20 Most Populated Countries</h1>
+
+<ul>
+{% for row in rows %}
+    <li>
+        {{ row[1] }} ({{ row[2] }}) - Population: {{ row[3] }}
+    </li>
+{% endfor %}
+</ul>
