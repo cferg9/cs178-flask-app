@@ -1,19 +1,28 @@
-{% extends 'base.html' %}
-{% block title %}Favorites{% endblock %}
-
-{% block content %}
-<h1 class="mb-4">My Favorite Countries</h1>
-<div class="row row-cols-1 row-cols-md-3 g-4">
-    {% for fav in favorites %}
-    <div class="col">
-        <div class="card h-100 shadow-sm">
-            <div class="card-body">
-                <h5 class="card-title">{{ fav.Name }}</h5>
-                <p class="card-text">Population: {{ "{:,}".format(fav.Population) }}</p>
-                <p class="card-text">Region: {{ fav.Region }}</p>
-            </div>
-        </div>
-    </div>
-    {% endfor %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Favorites</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-5">
+    <h1>Favorites ⭐</h1>
+    <a href="{{ url_for('home') }}" class="btn btn-secondary mb-3">Home</a>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Country Code</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for fav in favs %}
+            <tr>
+                <td>{{ fav['country_code'] }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
 </div>
-{% endblock %}
+</body>
+</html>

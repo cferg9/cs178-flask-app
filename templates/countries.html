@@ -1,25 +1,38 @@
-{% extends 'base.html' %}
-{% block title %}Countries{% endblock %}
-
-{% block content %}
-<h1 class="mb-4">World Countries</h1>
-<table class="table table-striped table-hover shadow-sm">
-    <thead class="table-primary">
-        <tr>
-            <th>Country Name</th>
-            <th>Population</th>
-            <th>Region</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for country in countries %}
-        <tr>
-            <td>{{ country.Name }}</td>
-            <td>{{ "{:,}".format(country.Population) }}</td>
-            <td>{{ country.Region }}</td>
-        </tr>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Countries</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-5">
+    <h1>Countries 🌎</h1>
+    <a href="{{ url_for('home') }}" class="btn btn-secondary mb-3">Home</a>
+    <table class="table table-striped table-bordered">
+        <thead class="thead-dark">
+            <tr>
+                <th>Code</th>
+                <th>Name</th>
+                <th>Continent</th>
+                <th>Population</th>
+                <th>Details</th>
+                <th>Favorite</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for row in rows %}
+            <tr>
+                <td>{{ row.Code }}</td>
+                <td>{{ row.Name }}</td>
+                <td>{{ row.Continent }}</td>
+                <td>{{ row.Population }}</td>
+                <td><a href="{{ url_for('country_detail', code=row.Code) }}" class="btn btn-info btn-sm">View</a></td>
+                <td><a href="{{ url_for('favorite', code=row.Code) }}" class="btn btn-warning btn-sm">⭐</a></td>
+            </tr>
         {% endfor %}
-    </tbody>
-</table>
-{% endblock %}
-
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

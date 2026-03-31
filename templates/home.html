@@ -1,29 +1,65 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Home Page</title>
-    <!-- Bootstrap CSS -->
+    <meta charset="UTF-8">
+    <title>World Explorer</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f8f9fa; }
+        .card-link { text-decoration: none; color: #fff; }
+        .card-link:hover { text-decoration: none; color: #fff; }
+        .card { transition: transform 0.2s; }
+        .card:hover { transform: scale(1.05); }
+    </style>
 </head>
 <body>
-    <!-- display a flash message here, if necessary -->
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            {% for category, message in messages %}
-                <div class="alert alert-{{ category }}">
-                    {{ message }}
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">🌍 World Explorer</h1>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="close" data-dismiss="alert">&times;</button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <div class="card bg-primary text-white text-center">
+                    <div class="card-body">
+                        <h5 class="card-title">Countries</h5>
+                        <p class="card-text">View all countries from the database.</p>
+                        <a href="{{ url_for('countries') }}" class="card-link btn btn-light">Go</a>
+                    </div>
                 </div>
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
-    <div class="container">
-        <h1 class="mt-5">World Explorer</h1>
-        <div class="mt-3">
-            <a href="/countries">View Countries</a><br>
-            <a href="/notes">View Notes</a><br>
-            <a href="/favorites">Favorites</a>
-            
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="card bg-success text-white text-center">
+                    <div class="card-body">
+                        <h5 class="card-title">Notes</h5>
+                        <p class="card-text">Add or view your country notes.</p>
+                        <a href="{{ url_for('notes') }}" class="card-link btn btn-light">Go</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="card bg-warning text-white text-center">
+                    <div class="card-body">
+                        <h5 class="card-title">Favorites</h5>
+                        <p class="card-text">Check your favorite countries.</p>
+                        <a href="{{ url_for('favorites') }}" class="card-link btn btn-light">Go</a>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

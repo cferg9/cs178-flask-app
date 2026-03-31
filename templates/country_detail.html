@@ -1,10 +1,34 @@
-<h1>Country Details</h1>
-
-{% for row in rows %}
-    <p><b>Name:</b> {{ row[0] }}</p>
-    <p><b>Capital:</b> {{ row[1] }}</p>
-    <p><b>Population:</b> {{ row[2] }}</p>
-    <p><b>Continent:</b> {{ row[3] }}</p>
-{% endfor %}
-
-<a href="/countries">Back</a>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Country Details</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-5">
+    <h1>Country Details</h1>
+    <a href="{{ url_for('countries') }}" class="btn btn-secondary mb-3">Back to Countries</a>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Country</th>
+                <th>Capital</th>
+                <th>Population</th>
+                <th>Continent</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for row in rows %}
+            <tr>
+                <td>{{ row['Name'] }}</td>
+                <td>{{ row['Name'] }}</td>
+                <td>{{ row['Population'] }}</td>
+                <td>{{ row['Continent'] }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+</body>
+</html>
