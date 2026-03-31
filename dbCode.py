@@ -5,20 +5,25 @@
 import pymysql
 import creds
 
+
 def get_conn():
-    """Returns a connection to the MySQL RDS instance."""
-    conn = pymysql.connect(
+    return pymysql.connect(
         host=creds.host,
         user=creds.user,
         password=creds.password,
-        db=creds.db,
+        database=creds.db,
+        cursorclass=pymysql.cursors.DictCursor
     )
-    return conn
 
 def execute_query(query, args=()):
-    """Executes a SELECT query and returns all rows as dictionaries."""
-    cur = get_conn().cursor(pymysql.cursors.DictCursor)
+    conn = get_conn()
+    cur = conn.cursor()
+    
     cur.execute(query, args)
     rows = cur.fetchall()
+    
     cur.close()
+    conn.close()
+    
     return rows
+
