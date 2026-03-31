@@ -1,0 +1,10 @@
+<h1>Country Details</h1>
+
+{% for row in rows %}
+    <p><b>Name:</b> {{ row[0] }}</p>
+    <p><b>Capital:</b> {{ row[1] }}</p>
+    <p><b>Population:</b> {{ row[2] }}</p>
+    <p><b>Continent:</b> {{ row[3] }}</p>
+{% endfor %}
+
+<a href="/countries">Back</a>

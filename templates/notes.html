@@ -1,0 +1,15 @@
+<h1>Notes</h1>
+
+<a href="/add-note">Add Note</a>
+
+<ul>
+{% for row in rows %}
+    <li>
+        {{ row[1] }} - {{ row[2] }}
+        <a href="/update-note/{{ row[0] }}">Edit</a>
+        <a href="/delete-note/{{ row[0] }}">Delete</a>
+    </li>
+{% endfor %}
+</ul>
+
+<a href="/">Home</a>
