@@ -1,9 +1,19 @@
-<h1> Favorites</h1>
+{% extends 'base.html' %}
+{% block title %}Favorites{% endblock %}
 
-<ul>
-{% for f in favs %}
-    <li>{{ f.country_code }}</li>
-{% endfor %}
-</ul>
-
-<a href="/">Home</a>
+{% block content %}
+<h1 class="mb-4">My Favorite Countries</h1>
+<div class="row row-cols-1 row-cols-md-3 g-4">
+    {% for fav in favorites %}
+    <div class="col">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">{{ fav.Name }}</h5>
+                <p class="card-text">Population: {{ "{:,}".format(fav.Population) }}</p>
+                <p class="card-text">Region: {{ fav.Region }}</p>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
