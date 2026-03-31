@@ -11,63 +11,115 @@ app = Flask(__name__)
 app.secret_key = 'your_secret_key' # this is an artifact for using flash displays; 
                                    # it is required, but you can leave this alone
 
+# -------------------------
+# HOME
+# -------------------------
 @app.route('/')
 def home():
     return render_template('home.html')
 
-@app.route('/add-user', methods=['GET', 'POST'])
-def add_user():
-    if request.method == 'POST':
-        # Extract form data
-        f_name = request.form['f_name']
-        l_name = request.form['l_name']
-        genre = request.form['genre']
-        
-        # Process the data (e.g., add it to a database)
-        # For now, let's just print it to the console
-        print("f_name:", f_name, ":", "l_name", l_name, ":", "Favorite Genre:", genre)
-        
-        flash('User added successfully! Huzzah!', 'success')  # 'success' is a category; makes a green banner at the top
-        # Redirect to home page or another page upon successful submission
-        return redirect(url_for('home'))
-    else:
-        # Render the form page if the request method is GET
-        return render_template('add_user.html')
 
-@app.route('/delete-user',methods=['GET', 'POST'])
-def delete_user():
-    if request.method == 'POST':
-        # Extract form data
-        name = request.form['name']
-        
-        # Process the data (e.g., add it to a database)
-        # For now, let's just print it to the console
-        print("Name to delete:", name)
-        
-        flash('User deleted successfully! Hoorah!', 'warning') 
-        # Redirect to home page or another page upon successful submission
-        return redirect(url_for('home'))
-    else:
-        # Render the form page if the request method is GET
-        return render_template('delete_user.html')
-
-
-@app.route('/display-users')
-def display_users():
-    # hard code a value to the users_list;
-    # note that this could have been a result from an SQL query :) 
-    users_list = (('John','Doe','Comedy'),('Jane', 'Doe','Drama'))
-    return render_template('display_users.html', users = users_list)
-
+# -------------------------
+# READ: Countries (Checkpoint)
+# -------------------------
 @app.route('/countries')
-def view_countries():
+def countries():
     rows = execute_query("""
         SELECT Code, Name, Continent, Population
         FROM country
         ORDER BY Population DESC
         LIMIT 20
     """)
-    return render_template("countries.html", rows=rows)
+    return render_template('countries.html', rows=rows)
+
+
+# -------------------------
+# JOIN QUERY
+# -------------------------
+@app.route('/country/<code>')
+def country_detail(code):
+    rows = execute_query("""
+        SELECT country.Name, city.Name, country.Population, country.Continent
+        FROM country
+        JOIN city ON country.Capital = city.ID
+        WHERE country.Code = %s
+    """, (code,))
+    return render_template('country_detail.html', rows=rows)
+
+
+# -------------------------
+# CREATE NOTE
+# -------------------------
+@app.route('/add-note', methods=['GET', 'POST'])
+def add_note():
+    if request.method == 'POST':
+        code = request.form['country_code']
+        note = request.form['note']
+
+        execute_query("""
+            INSERT INTO notes (country_code, note)
+            VALUES (%s, %s)
+        """, (code, note))
+
+        flash("Note added!", "success")
+        return redirect(url_for('notes'))
+
+    return render_template('add_note.html')
+
+
+# -------------------------
+# READ NOTES
+# -------------------------
+@app.route('/notes')
+def notes():
+    rows = execute_query("SELECT * FROM notes")
+    return render_template('notes.html', rows=rows)
+
+
+# -------------------------
+# UPDATE NOTE
+# -------------------------
+@app.route('/update-note/<int:id>', methods=['GET', 'POST'])
+def update_note(id):
+    if request.method == 'POST':
+        new_note = request.form['note']
+
+        execute_query("""
+            UPDATE notes
+            SET note = %s
+            WHERE id = %s
+        """, (new_note, id))
+
+        flash("Note updated!", "info")
+        return redirect(url_for('notes'))
+
+    return render_template('update_note.html', id=id)
+
+
+# -------------------------
+# DELETE NOTE
+# -------------------------
+@app.route('/delete-note/<int:id>')
+def delete_note(id):
+    execute_query("DELETE FROM notes WHERE id = %s", (id,))
+    flash("Deleted!", "warning")
+    return redirect(url_for('notes'))
+
+
+# -------------------------
+# DYNAMODB: FAVORITES
+# -------------------------
+@app.route('/favorite/<code>')
+def favorite(code):
+    add_favorite(code)  # DynamoDB function
+    flash("Added to favorites!", "success")
+    return redirect(url_for('countries'))
+
+
+@app.route('/favorites')
+def favorites():
+    favs = get_favorites()
+    return render_template('favorites.html', favs=favs)
 
 # these two lines of code should always be the last in the file
 if __name__ == '__main__':
