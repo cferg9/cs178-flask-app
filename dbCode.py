@@ -22,6 +22,7 @@ def get_conn():
         user=creds.user,
         password=creds.password,
         db=creds.db,
+        port = 3306, 
         cursorclass=pymysql.cursors.DictCursor
     )
     return conn
