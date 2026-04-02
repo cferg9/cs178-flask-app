@@ -95,15 +95,14 @@ def delete_note(id):
     flash("Deleted!", "warning")
     return redirect(url_for('notes'))
 
-
-
 # -------------------------
 # DYNAMODB: FAVORITES
 # -------------------------
 @app.route('/favorite/<code>')
 def favorite(code):
-    add_favorite(code)  # DynamoDB function
-    flash("Added to favorites!", "success")
+    add_favorite("Guest", code)  
+    
+    flash(f"Added {code} to favorites!", "success")
     return redirect(url_for('countries'))
 
 

@@ -9,6 +9,13 @@ import uuid
 from boto3.dynamodb.conditions import Key
 import creds  # Make sure creds.py exists for MySQL access
 
+# 1. Establish the resource once
+# Make sure this region matches where you created the table!
+dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
+
+# 2. Define your table variables clearly
+favorites_table = dynamodb.Table('Favorites')
+table = dynamodb.Table('Notes') # Use a specific name like notes_table
 # ----------------------------
 # MySQL Helpers
 # ----------------------------
@@ -39,9 +46,7 @@ def execute_query(query, args=()):
 # DynamoDB Helpers
 # ----------------------------
 
-# Set the region explicitly
-dynamodb = boto3.resource('dynamodb', region_name='us-east-1')  # Change if needed
-favorites_table = dynamodb.Table('Favorites')  # Replace with your DynamoDB table name
+
 
 def get_favorites():
     """Returns all items from the Favorites DynamoDB table."""
@@ -58,7 +63,7 @@ def add_favorite(user, country):
         favorites_table.put_item(
             Item={
                 'User': user,
-                'Country': country
+                'Country': Country
             }
         )
         return True
@@ -66,31 +71,40 @@ def add_favorite(user, country):
         print("Error adding favorite:", e)
         return False
 
-# connect to DynamoDB
-dynamodb = boto3.resource('dynamodb')
-table = dynamodb.Table('Notes')  
 
 # -------------------------
 # CREATE NOTE
 # -------------------------
 def add_note_db(country_code, note):
-    note_id = str(uuid.uuid4())  # unique ID
-
-    table.put_item(
-        Item={
-            'id': note_id,
-            'country_code': country_code,
-            'note': note
-        }
-    )
+    try:
+        note_id = str(uuid.uuid4())
+        notes_table.put_item(
+            Item={
+                'id': note_id,            # Check: Is your Partition Key actually named 'id'?
+                'country_code': country_code,
+                'note': note
+            }
+        )
+        return True
+    except Exception as e:
+        print(f"Error: {e}") # This will tell you EXACTLY why it's failing
+        return False
 
 
 # -------------------------
 # READ NOTES
 # -------------------------
 def get_notes_db():
-    response = table.scan()
-    return response.get('Items', [])
+    # Force the connection inside the function to see exactly what's wrong
+    try:
+        test_db = boto3.resource('dynamodb', region_name='us-east-1')
+        test_table = test_db.Table('Notes') 
+        response = test_table.scan()
+        return response.get('Items', [])
+    except Exception as e:
+        # This will print the REAL reason (Permissions? Wrong Region? Table Name?)
+        print(f"DEBUG ERROR: {e}")
+        return []
 
 
 # -------------------------
