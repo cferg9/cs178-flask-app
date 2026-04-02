@@ -12,7 +12,7 @@ app.secret_key = 'your_secret_key' # this is an artifact for using flash display
                                    # it is required, but you can leave this alone
 
 
-dynamodb = boto3.resource('dynamodb')
+dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
 table = dynamodb.Table('Favorites')  # make sure this matches your table name
 
 def get_favorites():
@@ -63,54 +63,37 @@ def add_note():
         code = request.form['country_code']
         note = request.form['note']
 
-        execute_query("""
-            INSERT INTO notes (country_code, note)
-            VALUES (%s, %s)
-        """, (code, note))
+        add_note_db(code, note)
 
         flash("Note added!", "success")
         return redirect(url_for('notes'))
 
     return render_template('add_note.html')
 
-
-# -------------------------
-# READ NOTES
-# -------------------------
 @app.route('/notes')
 def notes():
-    rows = execute_query("SELECT * FROM notes")
+    rows = get_notes_db()
     return render_template('notes.html', rows=rows)
 
-
-# -------------------------
-# UPDATE NOTE
-# -------------------------
-@app.route('/update-note/<int:id>', methods=['GET', 'POST'])
+@app.route('/update-note/<id>', methods=['GET', 'POST'])
 def update_note(id):
     if request.method == 'POST':
         new_note = request.form['note']
 
-        execute_query("""
-            UPDATE notes
-            SET note = %s
-            WHERE id = %s
-        """, (new_note, id))
+        update_note_db(id, new_note)
 
         flash("Note updated!", "info")
         return redirect(url_for('notes'))
 
     return render_template('update_note.html', id=id)
 
-
-# -------------------------
-# DELETE NOTE
-# -------------------------
-@app.route('/delete-note/<int:id>')
+@app.route('/delete-note/<id>')
 def delete_note(id):
-    execute_query("DELETE FROM notes WHERE id = %s", (id,))
+    delete_note_db(id)
+
     flash("Deleted!", "warning")
     return redirect(url_for('notes'))
+
 
 
 # -------------------------

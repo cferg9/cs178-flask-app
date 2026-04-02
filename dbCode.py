@@ -2,12 +2,10 @@
 # Author: Your Name
 # Helper functions for database connection and queries
 
-import pymysql
-import creds
-
 
 import pymysql
 import boto3
+import uuid
 from boto3.dynamodb.conditions import Key
 import creds  # Make sure creds.py exists for MySQL access
 
@@ -68,3 +66,50 @@ def add_favorite(user, country):
         print("Error adding favorite:", e)
         return False
 
+# connect to DynamoDB
+dynamodb = boto3.resource('dynamodb')
+table = dynamodb.Table('Notes')  
+
+# -------------------------
+# CREATE NOTE
+# -------------------------
+def add_note_db(country_code, note):
+    note_id = str(uuid.uuid4())  # unique ID
+
+    table.put_item(
+        Item={
+            'id': note_id,
+            'country_code': country_code,
+            'note': note
+        }
+    )
+
+
+# -------------------------
+# READ NOTES
+# -------------------------
+def get_notes_db():
+    response = table.scan()
+    return response.get('Items', [])
+
+
+# -------------------------
+# UPDATE NOTE
+# -------------------------
+def update_note_db(note_id, new_note):
+    table.update_item(
+        Key={'id': note_id},
+        UpdateExpression="set note = :n",
+        ExpressionAttributeValues={
+            ':n': new_note
+        }
+    )
+
+
+# -------------------------
+# DELETE NOTE
+# -------------------------
+def delete_note_db(note_id):
+    table.delete_item(
+        Key={'id': note_id}
+    )
