@@ -9,13 +9,11 @@ import uuid
 from boto3.dynamodb.conditions import Key
 import creds  # Make sure creds.py exists for MySQL access
 
-# 1. Establish the resource once
-# Make sure this region matches where you created the table!
-dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
 
-# 2. Define your table variables clearly
+dynamodb = boto3.resource('dynamodb', region_name='us-east-1') 
+
+notes_table = dynamodb.Table('Notes') 
 favorites_table = dynamodb.Table('Favorites')
-table = dynamodb.Table('Notes') # Use a specific name like notes_table
 # ----------------------------
 # MySQL Helpers
 # ----------------------------
@@ -57,52 +55,42 @@ def get_favorites():
         print("Error fetching favorites:", e)
         return []
 
-def add_favorite(user, country):
-    """Adds a new favorite country for a user."""
-    try:
-        favorites_table.put_item(
-            Item={
-                'User': user,
-                'Country': Country
-            }
-        )
-        return True
-    except Exception as e:
-        print("Error adding favorite:", e)
-        return False
+def add_favorite(user, country_code):
+    favorites_table = dynamodb.Table('Favorites')
+    favorites_table.put_item(
+        Item={
+            'User': user,          # Matches the Partition Key
+            'Country': country_code # Matches the Sort Key
+        }
+    )
 
 
 # -------------------------
 # CREATE NOTE
 # -------------------------
-def add_note_db(country_code, note):
-    try:
-        note_id = str(uuid.uuid4())
-        notes_table.put_item(
-            Item={
-                'id': note_id,            # Check: Is your Partition Key actually named 'id'?
-                'country_code': country_code,
-                'note': note
-            }
-        )
-        return True
-    except Exception as e:
-        print(f"Error: {e}") # This will tell you EXACTLY why it's failing
-        return False
-
+def add_note_db(code, note):
+    import uuid
+    notes_table = dynamodb.Table('Notes')
+    notes_table.put_item(
+        Item={
+            'id': str(uuid.uuid4()), # Matches the Partition Key
+            'country_code': code,
+            'note': note
+        }
+    )
 
 # -------------------------
 # READ NOTES
 # -------------------------
 def get_notes_db():
-    # Force the connection inside the function to see exactly what's wrong
+
     try:
         test_db = boto3.resource('dynamodb', region_name='us-east-1')
         test_table = test_db.Table('Notes') 
         response = test_table.scan()
         return response.get('Items', [])
     except Exception as e:
-        # This will print the REAL reason (Permissions? Wrong Region? Table Name?)
+    
         print(f"DEBUG ERROR: {e}")
         return []
 
@@ -110,20 +98,40 @@ def get_notes_db():
 # -------------------------
 # UPDATE NOTE
 # -------------------------
-def update_note_db(note_id, new_note):
-    table.update_item(
-        Key={'id': note_id},
-        UpdateExpression="set note = :n",
-        ExpressionAttributeValues={
-            ':n': new_note
-        }
-    )
+def update_note_db(note_id, new_note_text):
+    try:
+        # Ensure the key name 'id' is lowercase to match your AWS table
+        notes_table.update_item(
+            Key={
+                'id': note_id 
+            },
+            # 'set note = :val' tells AWS: "Change the 'note' column to this new value"
+            UpdateExpression="set note = :val",
+            ExpressionAttributeValues={
+                ':val': new_note_text
+            }
+        )
+        print(f"Successfully updated note {note_id}")
+        return True
+    except Exception as e:
+        print(f"UPDATE ERROR: {e}")
+        return False
 
 
 # -------------------------
 # DELETE NOTE
 # -------------------------
 def delete_note_db(note_id):
-    table.delete_item(
-        Key={'id': note_id}
-    )
+    try:
+    
+        note_id_str = str(note_id) 
+        
+        notes_table.delete_item(
+            Key={
+                'id': note_id_str 
+            }
+        )
+        return True
+    except Exception as e:
+        print(f"Error: {e}")
+        return False
