@@ -2,33 +2,78 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Country Details</title>
+    <title>{{ country.Name }} Details</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
 <div class="container mt-5">
-    <h1>Country Details</h1>
-    <a href="{{ url_for('countries') }}" class="btn btn-secondary mb-3">Back to Countries</a>
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Country</th>
-                <th>Capital</th>
-                <th>Population</th>
-                <th>Continent</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for row in rows %}
-            <tr>
-                <td>{{ row['Name'] }}</td>
-                <td>{{ row['Name'] }}</td>
-                <td>{{ row['Population'] }}</td>
-                <td>{{ row['Continent'] }}</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>{{ country.Name }}</h1>
+        <a href="{{ url_for('countries') }}" class="btn btn-secondary">Back to List</a>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">General Information</h5>
+            <p class="card-text">
+                <strong>Capital:</strong> {{ country.CapitalName }}<br>
+                <strong>Population:</strong> {{ "{:,}".format(country.Population) }}<br>
+                <strong>Continent:</strong> {{ country.Continent }}
+            </p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <h3>Major Cities</h3>
+            <table class="table table-sm table-hover">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>City</th>
+                        <th>District</th>
+                        <th>Population</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for city in cities %}
+                    <tr>
+                        <td>{{ city.Name }}</td>
+                        <td>{{ city.District }}</td>
+                        <td>{{ "{:,}".format(city.Population) }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="col-md-6">
+            <h3>Languages</h3>
+            <table class="table table-sm table-hover">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Language</th>
+                        <th>Percentage</th>
+                        <th>Official</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for lang in languages %}
+                    <tr>
+                        <td>{{ lang.Language }}</td>
+                        <td>{{ lang.Percentage }}%</td>
+                        <td>
+                            {% if lang.IsOfficial == 'T' %}
+                                <span class="badge badge-success">Yes</span>
+                            {% else %}
+                                <span class="badge badge-light">No</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 </body>
 </html>

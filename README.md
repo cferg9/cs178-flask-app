@@ -8,7 +8,9 @@
 
 ## Overview
 
-<!-- Describe your project in 2-4 sentences. What does it do? Who is it for? What problem does it solve? -->
+I really enjoy geography and wanted to use the pre-exisiting "world" database that was provided to us to use
+in class. I decided to make a little World Explorer where you can add your favorite countries, make notes about your 
+favorite countries, which allows you to update those notes, and also delete them if you don't want them anymore. This database reads from a list of 20 countries to experiment with that are composed of important information about each country. This includes the capital, population, and other info. 
 
 ---
 
@@ -98,41 +100,52 @@ db = "your-database-name"
 ### SQL (MySQL on RDS)
 
 <!-- Briefly describe your relational database schema. What tables do you have? What are the key relationships? -->
+Inside the "world" database, the main table is "Country" with columns named code(Primary Key) , name, continent, and population. The "Code" column is the key relationship that all other columns depend on as no other country can have the same country code. This ensures all countries are unique. 
 
-**Example:**
+- `[Country]` — stores global geographic, demographic, and economic statistics for 197 nations; primary key is the 3-letter ISO; `[Code]`
+- `[Capital]` — stores the specific city ID assigned as the seat of government; foreign key links to the ID column in the `[city table]`. 
+- `[Language]` — stores the names, official status, and speaker percentages for various regions; foreign key links to the `[CountryCode]` in the country table.
 
-- `[TableName]` — stores [description]; primary key is `[key]`
-- `[TableName]` — stores [description]; foreign key links to `[other table]`
+The JOIN query used in this project: 
 
-The JOIN query used in this project: <!-- describe it in plain English -->
+The JOIN query is located in your country_detail route within flaskapp.py. This route is triggered whenever a user clicks "View" on a specific country from your main list. This query performs a LEFT JOIN between the country table and the city table. It matches the Capital column (which contains an ID number) from the country record to the ID column in the city table.
+
 
 ### DynamoDB
 
 <!-- Describe your DynamoDB table. What is the partition key? What attributes does each item have? How does it connect to the rest of the app? -->
 
-- **Table name:** `[your-table-name]`
-- **Partition key:** `[key-name]`
-- **Used for:** [description]
+My project utilizes two DynamoDB tables to manage user interaction: the notes table, which uses a unique UUID partition key to store text entries linked to nations via a country\_code, and the favorites table, which uses a composite key (User and Country) to track saved locations. These tables connect with Flask by allowing the app to query specific user data, like personalized notes or favorite statuses, based on the country currently being viewed.
+
+- **Table name:** `[Notes`
+- **Partition key:** `[id]`
+- **Used for:** [Adding your own notes about any of the 197 countries, can be updated, created, deleted and read from the DynamoDB database.]
+
+- **Table name:** `[Favorites]`
+- **Partition key:** `[User]`
+- **Used for:** [Adding your favorite countries to the 'favorites' tab in the World Explorer, to keep track of your
+favorite countries.]
 
 ---
 
 ## CRUD Operations
 
-| Operation | Route      | Description    |
-| --------- | ---------- | -------------- |
-| Create    | `/[route]` | [what it does] |
-| Read      | `/[route]` | [what it does] |
-| Update    | `/[route]` | [what it does] |
-| Delete    | `/[route]` | [what it does] |
+| Operation | Route         | Description    |
+| --------- | -----------   | -------------- |
+| Create    | `add_note`    | [allows you to add notes to the note tab] |
+| Read      | `countries`   | [displays all countries and favorites]    |
+| Update    | `update_note` | [Updates whichever note you choose]       |
+| Delete    | `delete_note` | [Deletes whichever not you choose]        |
 
 ---
 
 ## Challenges and Insights
 
 <!-- What was the hardest part? What did you learn? Any interesting design decisions? -->
-
+The hardest part about this project was getting everythig linked, I ran into a bunch of connection errors with mySQL
+not wanting to work and learing that all that was wrong was the endpoint I had copied and pasted in was slightly different than what I needed to have. Then I couldn't get my Notes and Favorites tabs to work when I soon realized I needed to create the actual tables on AWS first. So luckily, nothing actual ever broke, it was just very minimal errors that were hard to find in the volume of code that I have. 
 ---
 
 ## AI Assistance
 
-<!-- List any AI tools you used (e.g., ChatGPT) and briefly describe what you used them for. Per course policy, AI use is allowed but must be cited in code comments and noted here. -->
+I utilized Gemini for debugging all the problems listed above, it gave me the try/catch statements to ensure things would run. I tried asking ChatGPT for help with debugging but it had no idea what to do, so I went to gemini instead. 

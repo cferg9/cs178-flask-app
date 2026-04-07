@@ -47,91 +47,119 @@ def execute_query(query, args=()):
 
 
 def get_favorites():
-    """Returns all items from the Favorites DynamoDB table."""
+    """
+    Retrieves all records from the Favorites DynamoDB table.
+    Returns: A list of dictionary items representing favorite countries.
+    """
     try:
+        # Scanning the table to get all user-favorited items
         response = favorites_table.scan()
         return response.get('Items', [])
     except Exception as e:
-        print("Error fetching favorites:", e)
+        print(f"DATABASE ERROR (get_favorites): {e}")
         return []
 
 def add_favorite(user, country_code):
-    favorites_table = dynamodb.Table('Favorites')
-    favorites_table.put_item(
-        Item={
-            'User': user,          # Matches the Partition Key
-            'Country': country_code # Matches the Sort Key
-        }
-    )
+    """
+    Adds a new entry to the Favorites table using a Partition Key (User) 
+    and Sort Key (Country).
+    """
+    try:
+        # Re-initializing table reference to ensure it's active
+        table = dynamodb.Table('Favorites')
+        table.put_item(
+            Item={
+                'User': user,          # Partition Key
+                'Country': country_code # Sort Key
+            }
+        )
+        return True
+    except Exception as e:
+        print(f"DATABASE ERROR (add_favorite): {e}")
+        return False
 
 
 # -------------------------
 # CREATE NOTE
 # -------------------------
+
 def add_note_db(code, note):
-    import uuid
-    notes_table = dynamodb.Table('Notes')
-    notes_table.put_item(
-        Item={
-            'id': str(uuid.uuid4()), # Matches the Partition Key
-            'country_code': code,
-            'note': note
-        }
-    )
+    """
+    Generates a unique UUID and saves a new note record to DynamoDB.
+    Args:
+        code (str): The 3-letter country code.
+        note (str): The text content provided by the user.
+    """
+    try:
+        notes_table = dynamodb.Table('Notes')
+        # Generating a unique ID for the Partition Key to prevent overwrites
+        unique_id = str(uuid.uuid4())
+        
+        notes_table.put_item(
+            Item={
+                'id': unique_id,
+                'country_code': code,
+                'note': note
+            }
+        )
+        return True
+    except Exception as e:
+        print(f"DATABASE ERROR (add_note_db): {e}")
+        return False
 
 # -------------------------
 # READ NOTES
 # -------------------------
-def get_notes_db():
 
+def get_notes_db():
+ 
     try:
-        test_db = boto3.resource('dynamodb', region_name='us-east-1')
-        test_table = test_db.Table('Notes') 
-        response = test_table.scan()
+        # Initializing resource specifically to ensure region alignment
+        db_resource = boto3.resource('dynamodb', region_name='us-east-1')
+        table = db_resource.Table('Notes') 
+        response = table.scan()
         return response.get('Items', [])
     except Exception as e:
-    
-        print(f"DEBUG ERROR: {e}")
+        print(f"DATABASE ERROR (get_notes_db): {e}")
         return []
 
 
 # -------------------------
 # UPDATE NOTE
 # -------------------------
+
 def update_note_db(note_id, new_note_text):
     try:
-        # Ensure the key name 'id' is lowercase to match your AWS table
+        # Using update_item to only change the 'note' attribute without replacing the whole row
         notes_table.update_item(
-            Key={
-                'id': note_id 
-            },
-            # 'set note = :val' tells AWS: "Change the 'note' column to this new value"
+            Key={'id': note_id},
             UpdateExpression="set note = :val",
-            ExpressionAttributeValues={
-                ':val': new_note_text
-            }
+            ExpressionAttributeValues={':val': new_note_text}
         )
         print(f"Successfully updated note {note_id}")
         return True
     except Exception as e:
-        print(f"UPDATE ERROR: {e}")
+        print(f"DATABASE ERROR (update_note_db): {e}")
         return False
 
 
 # -------------------------
 # DELETE NOTE
 # -------------------------
+
 def delete_note_db(note_id):
+    """
+    Permanently removes a note from the DynamoDB 'Notes' table.
+    Ensures the ID is formatted as a string to match the Partition Key type.
+    """
     try:
-    
+        # Typecasting to string for data integrity
         note_id_str = str(note_id) 
         
         notes_table.delete_item(
-            Key={
-                'id': note_id_str 
-            }
+            Key={'id': note_id_str}
         )
         return True
     except Exception as e:
-        print(f"Error: {e}")
+        print(f"DATABASE ERROR (delete_note_db): {e}")
         return False
