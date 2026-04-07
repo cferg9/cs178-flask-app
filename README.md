@@ -141,9 +141,9 @@ favorite countries.]
 
 ## Challenges and Insights
 
-<!-- What was the hardest part? What did you learn? Any interesting design decisions? -->
 The hardest part about this project was getting everythig linked, I ran into a bunch of connection errors with mySQL
 not wanting to work and learing that all that was wrong was the endpoint I had copied and pasted in was slightly different than what I needed to have. Then I couldn't get my Notes and Favorites tabs to work when I soon realized I needed to create the actual tables on AWS first. So luckily, nothing actual ever broke, it was just very minimal errors that were hard to find in the volume of code that I have. 
+
 ---
 
 ## AI Assistance
