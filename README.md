@@ -1,8 +1,8 @@
-# [Your Project Name Here]
+# [World Explorer ]
 
 **CS178: Cloud and Database Systems — Project #1**
-**Author:** [Your Name]
-**GitHub:** [your-username]
+**Author:** [Colton Ferguson]
+**GitHub:** [https://github.com/cferg9/cs178-flask-app.git]
 
 ---
 
@@ -108,7 +108,7 @@ Inside the "world" database, the main table is "Country" with columns named code
 
 The JOIN query used in this project: 
 
-The JOIN query is located in your country_detail route within flaskapp.py. This route is triggered whenever a user clicks "View" on a specific country from your main list. This query performs a LEFT JOIN between the country table and the city table. It matches the Capital column (which contains an ID number) from the country record to the ID column in the city table.
+The JOIN query is located in the country_detail route within flaskapp.py. This route is triggered whenever a user clicks "View" on a specific country from your main list. This query performs a LEFT JOIN between the country table and the city table. It matches the Capital column (which contains an ID number) from the country record to the ID column in the city table.
 
 
 ### DynamoDB
