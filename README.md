@@ -45,8 +45,8 @@ ProjectOne/
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/your-username/your-repo-name.git
-   cd your-repo-name
+   git clone https://github.com/your-username/cs178-flask-app.git
+   cd cs178-flask-app
    ```
 
 2. Install dependencies:
