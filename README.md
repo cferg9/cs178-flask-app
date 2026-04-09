@@ -28,12 +28,17 @@ favorite countries, which allows you to update those notes, and also delete them
 
 ```
 ProjectOne/
-├── flaskapp.py          # Main Flask application — routes and app logic
-├── dbCode.py            # Database helper functions (MySQL connection + queries)
-├── creds_sample.py      # Sample credentials file (see Credential Setup below)
+├── flaskapp.py                # Main Flask application — routes and app logic
+├── dbCode.py                  # Database helper functions (MySQL connection + queries)
+├── creds_sample.py            # Sample credentials file (see Credential Setup below)
 ├── templates/
-│   ├── home.html        # Landing page
-│   ├── [other].html     # Add descriptions for your other templates
+│   ├── home.html              # Landing page
+│   ├── add_note.html          # page for adding notes       
+|   ├── countries.html         # page where the first 20 countries are displayed with a search bar to find more
+|   ├── country_detail.html    # page after clicking on a country to view
+|   ├── favorites.html         # page where you can see your favorited countries
+|   ├── notes.html             # page where you can see all your notes
+|   ├── update_note.html       # page when clicking edit note in the notes page
 ├── .gitignore           # Excludes creds.py and other sensitive files
 └── README.md
 ```
